@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {trpc} from "./util";
 
 export interface HomeProps {
@@ -8,12 +8,14 @@ export const Home: React.FC<HomeProps> = (props) => {
   const info = `This app is using Chrome (v${window.appApi.chrome()}), Node.js (v${window.appApi.node()}), and Electron (v${window.appApi.electron()})`;
 
   const utils = trpc.useContext();
-  const users = trpc.users.useQuery();
-  const addUser = trpc.userCreate.useMutation({
+  const users = trpc.customers.useQuery();
+  const addUser = trpc.customerCreate.useMutation({
     onSuccess: () => {
-      utils.users.invalidate();
+      utils.customers.invalidate();
     }
   });
+
+  const [name, setName] = useState("");
 
   useEffect(() => {
     window.appApi.receive("app", (event) => {
@@ -29,8 +31,12 @@ export const Home: React.FC<HomeProps> = (props) => {
         {info}
 
         <h2>Users</h2>
+        <form>
+          <input type='text' name='name' onChange={(e) => setName(e.target.value)}/>
+        </form>
+      
         <button onClick={() => addUser.mutate({
-          name: "Test new user",
+          name : "new customer",
           dateCreated: new Date()
         })}>
           Add user

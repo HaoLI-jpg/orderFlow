@@ -12,8 +12,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Customer {
   id        Int @id @default(autoincrement())
   name      String
+  countryCode countryCode?  @relation(fields: [countryCodeId], references: [id])
+  countryCodeId Int?
+  phoneNumber Int?
   dateCreated DateTime @default(now())
+}
+
+model countryCode {
+  id           Int @id @default(autoincrement())
+  englishName   String
+  chineseName   String
+  countryCode   String
+  phoneCode     Int
+  customers     Customer[]
 }

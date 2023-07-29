@@ -8,33 +8,33 @@ const t = initTRPC.create({
 });
 
 export const appRouter = t.router({
-  users: t.procedure
+  customers: t.procedure
     .query(() => {
-      return prisma.user.findMany();
+      return prisma.customer.findMany();
     }),
-  userById: t.procedure
+  customerById: t.procedure
     .input(z.number().int())
     .query(({input: id}) => {
-      return prisma.user.findUnique({
+      return prisma.customer.findUnique({
         where: {
           id,
         }
       })
     }),
-  userCreate: t.procedure
+    customerCreate: t.procedure
     .input(z.object({
       name: z.string(),
       dateCreated: z.date()
     }))
     .mutation(async ({input: {name, dateCreated}}) => {
-      const user = await prisma.user.create({
+      const customer = await prisma.customer.create({
         data: {
           name,
           dateCreated
         }
       });
 
-      return user;
+      return customer;
     })
 });
 
