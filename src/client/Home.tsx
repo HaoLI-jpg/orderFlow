@@ -30,11 +30,15 @@ export const Home: React.FC<HomeProps> = (props) => {
       <div className="card">
         {info}
 
+        <h1 className="text-3xl font-bold underline">
+          Hello world!
+        </h1>
+
         <h2>Users</h2>
         <form>
           <input type='text' name='name' onChange={(e) => setName(e.target.value)}/>
         </form>
-      
+
         <button onClick={() => addUser.mutate({
           name : "new customer",
           dateCreated: new Date()
