@@ -1,6 +1,6 @@
-productName: ElectronPrismaTrpcExample
-appId: com.funtoimagine.electron-prisma-trpc-example
-copyright: Copyright 2022 Ayron Wohletz
+productName: OrderFlow
+appId: com.HaoLi.OrderFlow
+copyright: Copyright 2023 Hao Li
 afterSign: notarize.js
 publish:
   provider: github
@@ -40,7 +40,7 @@ win:
   asarUnpack: # only if you need to run prisma migrate:
     - prisma
   signingHashAlgorithms: [ 'sha256' ]
-  publisherName: Fun to Imagine LLC
+  publisherName: Hao Li
   signAndEditExecutable: true
   verifyUpdateCodeSignature: true
   # had to add artifactName here because electron-builder was generating latest.yml with hyphens instead of spaces,

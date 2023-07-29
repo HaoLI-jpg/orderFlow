@@ -1,10 +1,10 @@
 import {initTRPC} from '@trpc/server';
 import { prisma } from './prisma';
+import * as z from 'zod';
 import superjson from 'superjson';
-import {z} from "zod";
 
 const t = initTRPC.create({
-  transformer: superjson
+  transformer: superjson,
 });
 
 export const appRouter = t.router({
@@ -13,12 +13,7 @@ export const appRouter = t.router({
       return prisma.user.findMany();
     }),
   userById: t.procedure
-    .input((val: unknown) => {
-      if (typeof val !== 'number') {
-        throw new Error('invalid input');
-      }
-      return val;
-    })
+    .input(z.number().int())
     .query(({input: id}) => {
       return prisma.user.findUnique({
         where: {
@@ -29,13 +24,13 @@ export const appRouter = t.router({
   userCreate: t.procedure
     .input(z.object({
       name: z.string(),
-      dateCreated: z.date(),
+      dateCreated: z.date()
     }))
     .mutation(async ({input: {name, dateCreated}}) => {
-      console.log("Creating user on ", dateCreated.toLocaleString());
       const user = await prisma.user.create({
         data: {
-          name
+          name,
+          dateCreated
         }
       });
 
