@@ -1,12 +1,21 @@
-import {useState} from 'react'
-import {trpc} from "./util";
-import {httpBatchLink, loggerLink} from "@trpc/client";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {IpcRequest} from "../api";
-import {Home} from "./Home";
-import superjson from "superjson";
+import { useState } from 'react';
+import { AiOutlineTeam } from 'react-icons/ai';
+import { BiBlanket, BiCar } from 'react-icons/bi';
+import {
+    createBrowserRouter, createRoutesFromElements, Link, Outlet, Route, RouterProvider
+} from 'react-router-dom';
+import superjson from 'superjson';
 
-function App() {
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { httpBatchLink, loggerLink } from '@trpc/client';
+
+import { IpcRequest } from '../api';
+import { Home } from './Customers/Home';
+import Order from './Order/Order';
+import SideBar, { SideBarItem } from './SideBar/SideBar';
+import { trpc } from './util';
+
+export default function App() {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -42,14 +51,37 @@ function App() {
       transformer: superjson
     }),
   );
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path="/" element={<Root />} >
+        <Route path='/home' element={<Home />} />
+        <Route path='/order' element={<Order />} />
+      </Route>,
+    )
+  );
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <Home/>
+        <main className = "App">
+          <RouterProvider router={router} />
+        </main>
       </QueryClientProvider>
     </trpc.Provider>
   )
 }
 
-export default App
+const Root = () => {
+  return (
+  <div className='flex'>
+    <SideBar>
+      <SideBarItem icon={<AiOutlineTeam size={20}/>} name="Customers" targetUrl='/home'/>
+      <SideBarItem icon={<BiBlanket size={20}/>} name="Orders" targetUrl='/order'/>
+      <SideBarItem icon={<BiCar size={20}/>} name="Inventory" targetUrl='/home'/>
+    </SideBar>
+    <div>
+      <Outlet />
+    </div>
+  </div>
+  )
+}

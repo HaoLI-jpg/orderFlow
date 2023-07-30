@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {trpc} from "./util";
+import {trpc} from "../util";
 
 export interface HomeProps {
 }
