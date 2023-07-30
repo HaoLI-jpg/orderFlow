@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import {BsThreeDotsVertical, BsChevronLeft, BsChevronRight} from "react-icons/bs";
 import { createContext } from "react";
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
 
 const SideBarContext = createContext(true);
 
@@ -42,7 +42,6 @@ export default function SideBar({ children }: {children: React.ReactNode}){
 }
 
 export function SideBarItem({ icon, name, active, alert, targetUrl }: {icon: any, name: string, active?: boolean, alert?: boolean, targetUrl: string}){
-
     const expanded = useContext(SideBarContext);
 
     return(
