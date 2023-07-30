@@ -1,80 +1,125 @@
-import { useContext, useState } from "react";
-import {BsThreeDotsVertical, BsChevronLeft, BsChevronRight} from "react-icons/bs";
+import { useContext, useState, useEffect } from "react";
+import {BsChevronLeft, BsChevronRight} from "react-icons/bs";
+import { MdOutlineDarkMode } from "react-icons/md";
 import { createContext } from "react";
+import { FiSettings } from "react-icons/fi";
 import { Link} from "react-router-dom";
+import { RoutePathes } from "../RoutePathes";
+import { FiSun } from "react-icons/fi";
+import {appRouter} from "../util";
 
 const SideBarContext = createContext(true);
 
 export default function SideBar({ children }: {children: React.ReactNode}){
     const [expanded, setExpanded] = useState(true);
+    const [isDark, setIsDark] = useState(false);
+    // const utils = trpc.useContext();
+
+    // const trpcSetIsDark = trpc.setIsDark.useMutation({
+    //     onSuccess: () => {
+    //         utils.isDark.invalidate();
+    //     }
+    // });
+
+    const getIsDark = () => {
+        //return trpc.isDark.useQuery?.data();
+        return true;
+    }
+
+    const themeCheck = () => {
+        const userTheme = getIsDark();
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        if (userTheme === true || (!userTheme && systemTheme)) {
+            setIsDark(true);
+        }
+    };
+
+    useEffect(() => {
+        themeCheck();
+    })
+
+    const themeSwitch = () => {
+        if (document.documentElement.classList.contains("dark")) {
+            document.documentElement.classList.remove("dark");
+            //trpcSetIsDark.mutate(false);
+        }else {
+            document.documentElement.classList.add("dark");
+            //trpcSetIsDark.mutate(true);
+        }
+        setIsDark(getIsDark)
+
+    }
     return (
         <aside className="h-screen flex">
-            <nav className="h-full flex flex-col bg-white border-r shadow-sm">
+            <nav className="h-full flex flex-col bg-white dark:bg-gray-900 border-r dark:border-gray-500 shadow-sm">
                 <div className="p-4 pb-2 flex justify-between items-center">
-                    <img src="https://img.logoipsum.com/243.svg" 
-                    className={`overflow-hidden transition-all ${expanded ? 'w-32 h-9' : 'w-0 h-9'}`}
-                    />
-                    <button onClick = {() => setExpanded(curr => !curr)} className ="p-1.5 round-lg bg-gray-50 hover:bg-gray-100">
+                    <h1 className=
+                    {`font-syne text-xl transition-all duration-200 text-blue-800 overflow-clip dark:text-red-400
+                    ${expanded ? "w-auto opacity-100" : " w-0 opacity-0" }`}
+                    >
+                        OrderFlow
+                    </h1>
+                    <button onClick = {() => setExpanded(curr => !curr)} className ="p-1.5 mx-2 transition-all rounded-lg dark:text-white bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700">
                         {expanded ? <BsChevronLeft /> : <BsChevronRight />}
                     </button>
                 </div>
                 <SideBarContext.Provider value = {expanded}>
-                    <ul className="flex-1 px-3">{children}</ul>
+                    <ul className="flex-1 px-3 h-auto">{children}</ul>
                 </SideBarContext.Provider>
 
-                <div className = "border-t flex p-3">
-                    <img src="https://img.logoipsum.com/243.svg" className="w-10 h-10 rounded-md"/>
-                    <div className={`
-                    flex justify-between items-center
-                    overflow-hidden transition-all
-                    ${expanded ? 'w-52 ml-3' : 'w-0'}
-                    `}>
-                        <div className="leading-4">
-                            <h4 className="font-semibold">user</h4>
-                            <span className="text-xs text-gray-500">user@gmail.com</span>
-                        </div>
-                        <BsThreeDotsVertical size={20}/>
-                    </div>
+                <div className="flex py-3">
+                    <ul className="flex-1 px-3 h-auto items-center">
+                        <button onClick={() => themeSwitch()} className="flex relative items-center px-3 py-3 dark:text-red-400 rounded-md dark:hover:bg-gray-700" >
+                            {isDark? <FiSun size={20}/>: <MdOutlineDarkMode size={20}/>}
+                        </button>
+                        <SideBarContext.Provider value = {expanded}>
+                            <Link to={RoutePathes.Setting}>
+                                <SideBarItem icon={<FiSettings size={20}/>} name="Setting" active={location.pathname==RoutePathes.Setting} />
+                            </Link>
+                        </SideBarContext.Provider>
+                    </ul>
                 </div>
             </nav>
         </aside>
     )
 }
 
-export function SideBarItem({ icon, name, active, alert, targetUrl }: {icon: any, name: string, active?: boolean, alert?: boolean, targetUrl: string}){
+export function SideBarItem({ icon, name, active, alert }: {icon: any, name: string, active?: boolean, alert?: boolean}){
     const expanded = useContext(SideBarContext);
 
     return(
-        <li className={`relative flex items-center py-2 px-3 my-1
-            font-medium rounded-md cursor-pointer
-            transition-colors group
-            ${
-                active
-                ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800" 
-                : "hover:bg-indigo-50 text-gray-600"
-            }
-        `}>
-            <Link to={targetUrl} className={`flex`}>
-                {icon}
-                <span className={`overflow-hidden transition-all
-                ${expanded ? "w-52 ml-3" : "w-0"}`}>
-                    {name}
-                </span>
-                {alert &&
-                    (<div className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 
-                        ${expanded ? "" : "top-2"}
-                        `}/>
-                )}
 
-                {!expanded && 
-                <div className={` absolute left-full rounded-md px-2 py-1 ml-6
-                bg-indigo-100 text-indigo-800 text-sm invisible opacity-20
-                -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
-                `}>
-                    {name}
-                </div>}
-            </Link>
+            <li className={`relative flex items-center py-2 px-3 my-2
+                font-medium rounded-md cursor-pointer
+                transition-colors group
+                ${
+                    active
+                    ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800 dark:bg-gradient-to-tr dark:from-indigo-900 dark:to-gray-700 dark:text-red-700" 
+                    : "hover:bg-indigo-100 dark:hover:bg-gray-700 text-black"
+                }
+            `}>
+                    <div className=" dark:text-red-400">
+                        {icon}
+                    </div>
+                    <span className={`overflow-hidden transition-all dark:text-white 
+                    ${expanded ? "w-32 ml-3" : "w-0"}`}>
+                        {name}
+                    </span>
+                    {alert &&
+                        (<div className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 
+                            ${expanded ? "" : "top-2"}
+                            `}/>
+                    )}
 
-        </li>
+                    {!expanded && 
+                    <div className={` absolute left-full rounded-md px-2 py-1 ml-6
+                    bg-indigo-100 text-indigo-800 text-sm invisible opacity-20
+                    -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
+                    `}>
+                        {name}
+                    </div>}
+            </li>
+
     )
 }

@@ -1,4 +1,4 @@
-import {appRouter} from "./router";
+import {appRouter} from './Routes/_app';
 import {app, BrowserWindow, ipcMain, protocol} from 'electron';
 import path from "path";
 import {ipcRequestHandler} from "./ipcRequestHandler";

@@ -1,13 +1,9 @@
-import {initTRPC} from '@trpc/server';
-import { prisma } from './prisma';
+import { prisma } from '../prisma';
 import * as z from 'zod';
-import superjson from 'superjson';
+import {t} from "../trpc";
 
-const t = initTRPC.create({
-  transformer: superjson,
-});
 
-export const appRouter = t.router({
+export const customerRouter = t.router({
   customers: t.procedure
     .query(() => {
       return prisma.customer.findMany();
@@ -38,4 +34,4 @@ export const appRouter = t.router({
     })
 });
 
-export type AppRouter = typeof appRouter;
+export type CustomerRouter = typeof customerRouter;
