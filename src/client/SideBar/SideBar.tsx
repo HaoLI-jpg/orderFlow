@@ -1,7 +1,6 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, createContext } from "react";
 import {BsChevronLeft, BsChevronRight} from "react-icons/bs";
 import { MdOutlineDarkMode } from "react-icons/md";
-import { createContext } from "react";
 import { FiSettings } from "react-icons/fi";
 import { Link} from "react-router-dom";
 import { RoutePathes } from "../RoutePathes";
@@ -11,45 +10,33 @@ import {appRouter} from "../util";
 const SideBarContext = createContext(true);
 
 export default function SideBar({ children }: {children: React.ReactNode}){
+
+
+    const utils = appRouter.useContext();
     const [expanded, setExpanded] = useState(true);
-    const [isDark, setIsDark] = useState(false);
-    // const utils = trpc.useContext();
-
-    // const trpcSetIsDark = trpc.setIsDark.useMutation({
-    //     onSuccess: () => {
-    //         utils.isDark.invalidate();
-    //     }
-    // });
-
-    const getIsDark = () => {
-        //return trpc.isDark.useQuery?.data();
-        return true;
-    }
-
-    const themeCheck = () => {
-        const userTheme = getIsDark();
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-        if (userTheme === true || (!userTheme && systemTheme)) {
-            setIsDark(true);
+    const changeIsDark = appRouter.setIsDark.useMutation({
+        onSuccess: () => {
+          utils.isDark.invalidate();
         }
-    };
+      });
+    var currentIsDark = appRouter.isDark.useQuery();
 
-    useEffect(() => {
-        themeCheck();
-    })
+    if ( currentIsDark.data != undefined ) {
+        if (currentIsDark.data) {
+            document.documentElement.classList.add("dark");
+        }else {
+            document.documentElement.classList.remove("dark");
+        }
+    }
 
     const themeSwitch = () => {
         if (document.documentElement.classList.contains("dark")) {
-            document.documentElement.classList.remove("dark");
-            //trpcSetIsDark.mutate(false);
+            changeIsDark.mutate(false);
         }else {
-            document.documentElement.classList.add("dark");
-            //trpcSetIsDark.mutate(true);
+            changeIsDark.mutate(true);
         }
-        setIsDark(getIsDark)
-
     }
+
     return (
         <aside className="h-screen flex">
             <nav className="h-full flex flex-col bg-white dark:bg-gray-900 border-r dark:border-gray-500 shadow-sm">
@@ -71,7 +58,7 @@ export default function SideBar({ children }: {children: React.ReactNode}){
                 <div className="flex py-3">
                     <ul className="flex-1 px-3 h-auto items-center">
                         <button onClick={() => themeSwitch()} className="flex relative items-center px-3 py-3 dark:text-red-400 rounded-md dark:hover:bg-gray-700" >
-                            {isDark? <FiSun size={20}/>: <MdOutlineDarkMode size={20}/>}
+                            {currentIsDark.data? <MdOutlineDarkMode size={20}/>:<FiSun size={20}/>}
                         </button>
                         <SideBarContext.Provider value = {expanded}>
                             <Link to={RoutePathes.Setting}>
